@@ -1,4 +1,7 @@
 package org.example.feemanagementsystem.repository;
 
-public interface FeePaymentRepository {
+import org.example.feemanagementsystem.domain.entity.FeePayment;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface FeePaymentRepository extends JpaRepository<FeePayment, Long> {
 }

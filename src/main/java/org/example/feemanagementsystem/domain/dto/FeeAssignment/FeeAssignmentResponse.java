@@ -1,4 +1,6 @@
 package org.example.feemanagementsystem.domain.dto.FeeAssignment;
 
-public record FeeAssignmentResponse() {
+import java.math.BigDecimal;
+
+public record FeeAssignmentResponse(Long id, BigDecimal assignedAmount) {
 }

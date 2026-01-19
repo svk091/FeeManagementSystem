@@ -1,4 +1,6 @@
 package org.example.feemanagementsystem.domain.dto.fee_payment;
 
-public record FeePaymentResponse() {
+import java.math.BigDecimal;
+
+public record FeePaymentResponse(Long id, BigDecimal paidAmount) {
 }
