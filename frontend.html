@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JWT Auth Test</title>
+<style>
+    .toggle-btn { width: 100%; padding: 10px; margin-top: 5px; text-align: left; font-size: 18px; cursor: pointer; }
+    .content-section { display: none; padding: 10px; border: 1px solid #ccc; margin-bottom: 10px; }
+    input { display: block; margin: 5px 0; padding: 5px; }
+    #logoutBtn { float: right; background-color: #ff4444; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<button id="logoutBtn" onclick="logout()">Logout</button>
+<h1 style="margin-top:0;">Student System</h1>
+
+<button class="toggle-btn" onclick="toggle('regSection')">Register</button>
+<div id="regSection" class="content-section">
+    <input type="text" id="regUsername" placeholder="Username">
+    <input type="password" id="regPassword" placeholder="Password">
+    <button onclick="register()">Submit Register</button>
+</div>
+
+<button class="toggle-btn" onclick="toggle('loginSection')">Login</button>
+<div id="loginSection" class="content-section">
+    <input type="text" id="loginUsername" placeholder="Username">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="login()">Submit Login</button>
+</div>
+
+<button class="toggle-btn" onclick="toggle('createSection')">Create Student</button>
+<div id="createSection" class="content-section">
+    <input type="text" id="createName" placeholder="Name">
+    <input type="text" id="createMobile" placeholder="Mobile No">
+    <button onclick="createStudent()">Submit Create</button>
+    <div id="createResponse"></div>
+</div>
+
+<button class="toggle-btn" onclick="toggle('getSection')">Get Student</button>
+<div id="getSection" class="content-section">
+    <input type="text" id="studentGet" placeholder="Enter student id">
+    <button onclick="getStudentById()">Fetch Info</button>
+    <div id="studentResponse"></div>
+</div>
+
+<div id="response" style="margin-top:20px; font-weight:bold;"></div>
+
+<script>
+let token = localStorage.getItem('token');
+
+function toggle(id) {
+    const x = document.getElementById(id);
+    x.style.display = (x.style.display === "none") ? "block" : "none";
+}
+
+async function register() {
+    try {
+        const username = document.getElementById('regUsername').value;
+        const password = document.getElementById('regPassword').value;
+        const response = await fetch('http://localhost:8080/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await response.text();
+        document.getElementById('response').innerText = data;
+    } catch (error) {
+        document.getElementById('response').innerText = error.message;
+    }
+}
+
+async function login() {
+    try {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        const response = await fetch('http://localhost:8080/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (!response.ok) throw new Error("Login failed");
+
+        const data = await response.text();
+        token = data;
+        localStorage.setItem('token', token);
+        document.getElementById('response').innerText = "Login Successful";
+    } catch (error) {
+        document.getElementById('response').innerText = error.message;
+    }
+}
+
+async function createStudent() {
+    try {
+        if (!token) token = localStorage.getItem('token');
+        if (!token) {
+            document.getElementById('createResponse').innerText = "Not logged in";
+            return;
+        }
+
+        const name = document.getElementById('createName').value;
+        const mobileNo = document.getElementById('createMobile').value;
+
+        const response = await fetch('http://localhost:8080/api/student', {
+            method: 'POST',
+            headers: { 
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, mobileNo })
+        });
+        
+        const data = await response.text();
+        document.getElementById('createResponse').innerText = data;
+    } catch (error) {
+        document.getElementById('createResponse').innerText = error.message;
+    }
+}
+
+async function getStudentById() {
+    try {
+        if (!token) token = localStorage.getItem('token');
+        if (!token) {
+            document.getElementById('studentResponse').innerText = "Not logged in";
+            return;
+        }
+
+        const studentId = document.getElementById('studentGet').value;
+        const response = await fetch(`http://localhost:8080/api/student/${studentId}`, {
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await response.text();
+        document.getElementById('studentResponse').innerText = data;
+    } catch (error) {
+        document.getElementById('studentResponse').innerText = error.message;
+    }
+}
+
+function logout() {
+    token = null;
+    localStorage.removeItem('token');
+    document.getElementById('response').innerText = "Logged out";
+    document.getElementById('studentResponse').innerText = "";
+    document.getElementById('createResponse').innerText = "";
+    
+    // Optional: Hide all sections on logout
+    document.querySelectorAll('.content-section').forEach(el => el.style.display = 'none');
+}
+</script>
+</body>
+</html>
