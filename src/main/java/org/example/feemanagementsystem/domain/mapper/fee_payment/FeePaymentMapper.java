@@ -25,6 +25,6 @@ public class FeePaymentMapper {
     }
 
     public FeePaymentResponse toDto(FeePayment feePayment) {
-        return new FeePaymentResponse(feePayment.getId(), feePayment.getPaidAmount());
+        return new FeePaymentResponse(feePayment.getId(),feePayment.getPaidAt(), feePayment.getPaidAmount());
     }
 }

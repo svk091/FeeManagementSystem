@@ -129,16 +129,17 @@ async function getStudentById() {
     const response = await fetch(
       `http://localhost:8080/api/student/${studentId}`,
       {
-        method: "GET",
         headers: { Authorization: "Bearer " + token },
       },
     );
-    const data = await response.text();
-    document.getElementById("studentResponse").innerText = data;
+
+    const data = await response.json();
+    renderTable("studentResponse", data);
   } catch (error) {
     document.getElementById("studentResponse").innerText = error.message;
   }
 }
+
 
 async function assignFee() {
   try {
@@ -176,12 +177,12 @@ async function getAssignedFeeById() {
     const response = await fetch(
       `http://localhost:8080/api/fee/get-fee/${assignedFeeId}`,
       {
-        method: "GET",
         headers: { Authorization: "Bearer " + token },
       },
     );
-    const data = await response.text();
-    document.getElementById("assignedFeeResponse").innerText = data;
+
+    const data = await response.json();
+    renderTable("assignedFeeResponse", data);
   } catch (error) {
     document.getElementById("assignedFeeResponse").innerText = error.message;
   }
@@ -237,12 +238,12 @@ async function getPendingDues() {
     const response = await fetch(
       `http://localhost:8080/api/fee/dues/${studentId}`,
       {
-        method: "GET",
         headers: { Authorization: "Bearer " + token },
       },
     );
-    const data = await response.text();
-    document.getElementById("duesResponse").innerText = data;
+
+    const data = await response.json();
+    renderTable("duesResponse", data);
   } catch (error) {
     document.getElementById("duesResponse").innerText = error.message;
   }
@@ -256,16 +257,17 @@ async function getPaymentDetails() {
     const response = await fetch(
       `http://localhost:8080/api/fee/payments/${studentId}`,
       {
-        method: "GET",
         headers: { Authorization: "Bearer " + token },
       },
     );
-    const data = await response.text();
-    document.getElementById("paymentsResponse").innerText = data;
+
+    const data = await response.json();
+    renderTable("paymentsResponse", data);
   } catch (error) {
     document.getElementById("paymentsResponse").innerText = error.message;
   }
 }
+
 
 async function getAllDues() {
   try {
@@ -278,9 +280,57 @@ async function getAllDues() {
         headers: { Authorization: "Bearer " + token },
       },
     );
-    const data = await response.text();
-    document.getElementById("allDuesResponse").innerText = data;
+
+    const data = await response.json();
+    renderTable("allDuesResponse", data);
   } catch (error) {
     document.getElementById("allDuesResponse").innerText = error.message;
   }
+}
+
+function renderTable(containerId, data) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+
+  if (!data || (Array.isArray(data) && data.length === 0)) {
+    container.innerText = "No data";
+    return;
+  }
+
+  const table = document.createElement("table");
+  table.border = "1";
+  table.style.borderCollapse = "collapse";
+  table.style.width = "100%";
+
+  const thead = document.createElement("thead");
+  const tbody = document.createElement("tbody");
+
+  const rows = Array.isArray(data) ? data : [data];
+  const headers = Object.keys(rows[0]);
+
+  // Header
+  const trHead = document.createElement("tr");
+  headers.forEach((h) => {
+    const th = document.createElement("th");
+    th.innerText = h;
+    th.style.padding = "5px";
+    trHead.appendChild(th);
+  });
+  thead.appendChild(trHead);
+
+  // Body
+  rows.forEach((row) => {
+    const tr = document.createElement("tr");
+    headers.forEach((h) => {
+      const td = document.createElement("td");
+      td.innerText = row[h];
+      td.style.padding = "5px";
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(thead);
+  table.appendChild(tbody);
+  container.appendChild(table);
 }
