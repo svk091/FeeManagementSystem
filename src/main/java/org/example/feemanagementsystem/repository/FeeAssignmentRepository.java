@@ -9,4 +9,5 @@ import java.util.List;
 public interface FeeAssignmentRepository extends JpaRepository<FeeAssignment, Long> {
     List<FeeAssignment> findByStudentIdAndAssignedAmountGreaterThan(Long id, BigDecimal amount);
     List<FeeAssignment> findByStudentId(Long studentId);
+    List<FeeAssignment> findByAssignedAmountGreaterThan(BigDecimal amount);
 }

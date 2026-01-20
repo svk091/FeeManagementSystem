@@ -1,7 +1,24 @@
 let token = localStorage.getItem("token");
 
+window.onload = function () {
+  updateUIState();
+};
+
+function updateUIState() {
+  const protectedBtns = document.querySelectorAll(".protected");
+
+  if (token) {
+    protectedBtns.forEach((btn) => (btn.style.display = "inline-block"));
+  } else {
+    protectedBtns.forEach((btn) => (btn.style.display = "none"));
+  }
+}
+
 function toggle(id) {
   const x = document.getElementById(id);
+  document.querySelectorAll(".content-section").forEach((div) => {
+    if (div.id !== id) div.style.display = "none";
+  });
   x.style.display = x.style.display === "none" ? "block" : "none";
 }
 
@@ -36,19 +53,54 @@ async function login() {
     const data = await response.text();
     token = data;
     localStorage.setItem("token", token);
+
     document.getElementById("response").innerText = "Login Successful";
+    document.getElementById("loginSection").style.display = "none";
+
+    document.getElementById("loginUsername").value = "";
+    document.getElementById("loginPassword").value = "";
+
+    updateUIState();
   } catch (error) {
     document.getElementById("response").innerText = error.message;
   }
 }
 
+function logout() {
+  token = null;
+  localStorage.removeItem("token");
+
+  document.querySelectorAll("input").forEach((input) => (input.value = ""));
+
+  const responseIds = [
+    "response",
+    "createResponse",
+    "studentResponse",
+    "assignFeeResponse",
+    "assignedFeeResponse",
+    "payFeeResponse",
+    "feePaymentResponse",
+    "duesResponse",
+    "paymentsResponse",
+    "allDuesResponse",
+  ];
+  responseIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = "";
+  });
+
+  document
+    .querySelectorAll(".content-section")
+    .forEach((el) => (el.style.display = "none"));
+
+  updateUIState();
+
+  alert("Logged out");
+}
+
 async function createStudent() {
   try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("createResponse").innerText = "Not logged in";
-      return;
-    }
+    if (!token) throw new Error("Not logged in");
 
     const name = document.getElementById("createName").value;
     const mobileNo = document.getElementById("createMobile").value;
@@ -71,11 +123,7 @@ async function createStudent() {
 
 async function getStudentById() {
   try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("studentResponse").innerText = "Not logged in";
-      return;
-    }
+    if (!token) throw new Error("Not logged in");
 
     const studentId = document.getElementById("studentGet").value;
     const response = await fetch(
@@ -92,67 +140,12 @@ async function getStudentById() {
   }
 }
 
-async function createFeeType() {
-  try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("createFeeTypeResponse").innerText =
-        "Not logged in";
-      return;
-    }
-
-    const name = document.getElementById("feeTypeName").value;
-    const description = document.getElementById("feeTypeDescription").value;
-
-    const response = await fetch("http://localhost:8080/api/feetype", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, description }),
-    });
-
-    const data = await response.text();
-    document.getElementById("createFeeTypeResponse").innerText = data;
-  } catch (error) {
-    document.getElementById("createFeeTypeResponse").innerText = error.message;
-  }
-}
-
-async function getFeeTypeById() {
-  try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("feeTypeResponse").innerText = "Not logged in";
-      return;
-    }
-
-    const feeTypeId = document.getElementById("feeTypeGet").value;
-    const response = await fetch(
-      `http://localhost:8080/api/feetype/${feeTypeId}`,
-      {
-        method: "GET",
-        headers: { Authorization: "Bearer " + token },
-      },
-    );
-    const data = await response.text();
-    document.getElementById("feeTypeResponse").innerText = data;
-  } catch (error) {
-    document.getElementById("feeTypeResponse").innerText = error.message;
-  }
-}
-
 async function assignFee() {
   try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("assignFeeResponse").innerText = "Not logged in";
-      return;
-    }
+    if (!token) throw new Error("Not logged in");
 
     const studentId = document.getElementById("assignStudentId").value;
-    const feeTypeId = document.getElementById("assignFeeTypeId").value;
+    const feeType = document.getElementById("feeTypeSelect").value;
     const assignedAmount = document.getElementById("assignedAmount").value;
 
     const response = await fetch("http://localhost:8080/api/fee/assign-fee", {
@@ -161,7 +154,11 @@ async function assignFee() {
         Authorization: "Bearer " + token,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ studentId, feeTypeId, assignedAmount }),
+      body: JSON.stringify({
+        studentId: parseInt(studentId),
+        feeType: feeType,
+        assignedAmount: parseFloat(assignedAmount),
+      }),
     });
 
     const data = await response.text();
@@ -173,12 +170,7 @@ async function assignFee() {
 
 async function getAssignedFeeById() {
   try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("assignedFeeResponse").innerText =
-        "Not logged in";
-      return;
-    }
+    if (!token) throw new Error("Not logged in");
 
     const assignedFeeId = document.getElementById("assignedFeeGet").value;
     const response = await fetch(
@@ -197,11 +189,7 @@ async function getAssignedFeeById() {
 
 async function payFee() {
   try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("payFeeResponse").innerText = "Not logged in";
-      return;
-    }
+    if (!token) throw new Error("Not logged in");
 
     const feeAssignmentId = document.getElementById("payFeeAssignmentId").value;
     const paidAmount = document.getElementById("paidAmount").value;
@@ -224,11 +212,7 @@ async function payFee() {
 
 async function getFeePaymentById() {
   try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("feePaymentResponse").innerText = "Not logged in";
-      return;
-    }
+    if (!token) throw new Error("Not logged in");
 
     const paymentId = document.getElementById("feePaymentGet").value;
     const response = await fetch(
@@ -247,11 +231,7 @@ async function getFeePaymentById() {
 
 async function getPendingDues() {
   try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("duesResponse").innerText = "Not logged in";
-      return;
-    }
+    if (!token) throw new Error("Not logged in");
 
     const studentId = document.getElementById("duesStudentId").value;
     const response = await fetch(
@@ -270,11 +250,7 @@ async function getPendingDues() {
 
 async function getPaymentDetails() {
   try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("paymentsResponse").innerText = "Not logged in";
-      return;
-    }
+    if (!token) throw new Error("Not logged in");
 
     const studentId = document.getElementById("paymentsStudentId").value;
     const response = await fetch(
@@ -291,68 +267,20 @@ async function getPaymentDetails() {
   }
 }
 
-function logout() {
-  token = null;
-  localStorage.removeItem("token");
-  alert("logged out")
-  document.getElementById("studentResponse").innerText = "";
-  document.getElementById("createResponse").innerText = "";
-  document.getElementById("createFeeTypeResponse").innerText = "";
-  document.getElementById("feeTypeResponse").innerText = "";
-  document.getElementById("assignFeeResponse").innerText = "";
-  document.getElementById("assignedFeeResponse").innerText = "";
-  document.getElementById("payFeeResponse").innerText = "";
-  document.getElementById("feePaymentResponse").innerText = "";
-  document.getElementById("duesResponse").innerText = "";
-  document.getElementById("paymentsResponse").innerText = "";
-
-  document
-    .querySelectorAll(".content-section")
-    .forEach((el) => (el.style.display = "none"));
-}
-
-async function getPendingDues() {
+async function getAllDues() {
   try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("duesResponse").innerText = "Not logged in";
-      return;
-    }
+    if (!token) throw new Error("Not logged in");
 
-    const studentId = document.getElementById("duesStudentId").value;
     const response = await fetch(
-      `http://localhost:8080/api/fee/dues/${studentId}`,
+      "http://localhost:8080/api/report/getAllDues",
       {
         method: "GET",
         headers: { Authorization: "Bearer " + token },
       },
     );
     const data = await response.text();
-    document.getElementById("duesResponse").innerText = data;
+    document.getElementById("allDuesResponse").innerText = data;
   } catch (error) {
-    document.getElementById("duesResponse").innerText = error.message;
-  }
-}
-
-async function getPaymentDetails() {
-  try {
-    if (!token) token = localStorage.getItem("token");
-    if (!token) {
-      document.getElementById("paymentsResponse").innerText = "Not logged in";
-      return;
-    }
-
-    const studentId = document.getElementById("paymentsStudentId").value;
-    const response = await fetch(
-      `http://localhost:8080/api/fee/payments/${studentId}`,
-      {
-        method: "GET",
-        headers: { Authorization: "Bearer " + token },
-      },
-    );
-    const data = await response.text();
-    document.getElementById("paymentsResponse").innerText = data;
-  } catch (error) {
-    document.getElementById("paymentsResponse").innerText = error.message;
+    document.getElementById("allDuesResponse").innerText = error.message;
   }
 }

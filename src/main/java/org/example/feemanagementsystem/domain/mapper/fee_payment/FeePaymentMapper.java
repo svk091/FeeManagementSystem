@@ -12,11 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class FeePaymentMapper {
     private final FeeAssignmentRepository feeAssignmentRepository;
-    private final FeeAssignmentMapper feeAssignmentMapper;
 
-    public FeePaymentMapper(FeeAssignmentRepository feeAssignmentRepository, FeeAssignmentMapper feeAssignmentMapper) {
+    public FeePaymentMapper(FeeAssignmentRepository feeAssignmentRepository) {
         this.feeAssignmentRepository = feeAssignmentRepository;
-        this.feeAssignmentMapper = feeAssignmentMapper;
     }
 
 

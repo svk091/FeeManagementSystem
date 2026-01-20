@@ -16,8 +16,8 @@ public class FeeAssignment {
     private Student student;
 
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "fee_type_id", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "fee_type", nullable = false)
     private FeeType feeType;
 
     @Column(nullable = false, precision = 15, scale = 2)

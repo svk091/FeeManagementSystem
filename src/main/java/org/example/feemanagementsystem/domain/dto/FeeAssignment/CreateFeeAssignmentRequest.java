@@ -4,5 +4,5 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
 
-public record CreateFeeAssignmentRequest(@NotBlank Long studentId, @NotBlank Long feeTypeId, @NotBlank BigDecimal assignedAmount) {
+public record CreateFeeAssignmentRequest(@NotBlank Long studentId, String feeType, @NotBlank BigDecimal assignedAmount) {
 }
