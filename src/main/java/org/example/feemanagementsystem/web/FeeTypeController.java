@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/feetype")
-public class FeeTypeController {
+public class    FeeTypeController {
 
     private final FeeTypeService service;
 

@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
-    private org.example.feemanagementsystem.domain.entity.User user;
+    private final User user;
 
     public CustomUserDetails(User user) {
         this.user = user;

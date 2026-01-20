@@ -7,6 +7,8 @@ import org.example.feemanagementsystem.domain.dto.fee_payment.FeePaymentResponse
 import org.example.feemanagementsystem.service.FeeService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/fee")
 public class FeeController {
@@ -34,5 +36,15 @@ public class FeeController {
     @GetMapping("/payment/{id}")
     public FeePaymentResponse getFeePayed(@PathVariable Long id) {
         return service.getFeePayedById(id);
+    }
+
+    @GetMapping("/dues/{id}")
+    public List<FeeAssignmentResponse> getPendingDuesById(@PathVariable Long id) {
+        return service.getPendingDuesById(id);
+    }
+
+    @GetMapping("/payments/{id}")
+    public List<FeePaymentResponse> getPayedDetailsByStudentId(@PathVariable Long id){
+        return service.getPayedDetailsByStudentId(id);
     }
 }

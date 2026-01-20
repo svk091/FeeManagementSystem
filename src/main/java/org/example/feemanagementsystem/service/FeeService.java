@@ -14,6 +14,8 @@ import org.example.feemanagementsystem.repository.FeePaymentRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class FeeService {
@@ -48,8 +50,6 @@ public class FeeService {
 
         int compared = feeAssignment.getAssignedAmount().compareTo(createFeePaymentRequest.paidAmount());
 
-
-
         if(compared < 0) {
             throw  new IllegalArgumentException("Overpayment");
         } else  {
@@ -70,4 +70,32 @@ public class FeeService {
                 .orElseThrow(() -> new EntityNotFoundException("No fee payment with id: " + id));
         return feePaymentMapper.toDto(feePayment);
     }
+
+    public List<FeeAssignmentResponse> getPendingDuesById(Long id) {
+        List<FeeAssignmentResponse> result = new ArrayList<>();
+        List<FeeAssignment> list =  feeAssignmentRepository.findByStudentIdAndAssignedAmountGreaterThan(id, BigDecimal.ZERO);
+        for(FeeAssignment item: list) {
+            result.add(feeAssignmentMapper.toDto(item));
+        }
+        return result;
+    }
+
+    public List<FeePaymentResponse> getPayedDetailsByStudentId(Long id) {
+
+        List<FeeAssignment> assignments = feeAssignmentRepository.findByStudentId(id);
+
+        List<Long> assignmentIds = new ArrayList<>();
+        for(FeeAssignment item: assignments) {
+            assignmentIds.add(item.getId());
+        }
+
+        List<FeePayment> payments = feePaymentRepository.findByFeeAssignmentIdIn(assignmentIds);
+
+        List<FeePaymentResponse> result = new ArrayList<>();
+        for(FeePayment item: payments) {
+            result.add(feePaymentMapper.toDto(item));
+        }
+        return result;
+    }
+
 }

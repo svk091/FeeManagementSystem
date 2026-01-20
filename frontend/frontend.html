@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JWT Auth Test</title>
+<style>
+  
+</style>
+<script src="./script.js"></script>
+</head>
+<body>
+
+<button id="logoutBtn" onclick="logout()">Logout</button>
+<h1 style="margin-top:1;">Fee Management System</h1>
+
+
+<hr></hr>
+</br> 
+
+<button class="toggle-btn" onclick="toggle('regSection')">Register</button>
+<div id="regSection" class="content-section">
+    <input type="text" id="regUsername" placeholder="Username">
+    <input type="password" id="regPassword" placeholder="Password">
+    <button onclick="register()">Signup</button>
+</div>
+
+</br> 
+
+<button class="toggle-btn" onclick="toggle('loginSection')">Login</button>
+<div id="loginSection" class="content-section">
+    <input type="text" id="loginUsername" placeholder="Username">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="login()">Login</button>
+</div>
+
+</br> 
+<hr></hr>
+</br> 
+
+
+<button class="toggle-btn" onclick="toggle('createSection')">Create Student</button>
+<div id="createSection" class="content-section">
+    <input type="text" id="createName" placeholder="Name">
+    <input type="text" id="createMobile" placeholder="Mobile No">
+    <button onclick="createStudent()">Submit</button>
+    <div id="createResponse"></div>
+</div>
+
+</br> 
+</br> 
+
+
+<button class="toggle-btn" onclick="toggle('getSection')">Get Student</button>
+<div id="getSection" class="content-section">
+    <input type="text" id="studentGet" placeholder="Enter student id">
+    <button onclick="getStudentById()">Submit</button>
+    <div id="studentResponse"></div>
+</div>
+
+</br> 
+<hr></hr>
+</br> 
+
+
+<button class="toggle-btn" onclick="toggle('createFeeTypeSection')">Create Fee Type</button>
+<div id="createFeeTypeSection" class="content-section">
+    <input type="text" id="feeTypeName" placeholder="Name">
+    <input type="text" id="feeTypeDescription" placeholder="Description">
+    <button onclick="createFeeType()">Submit</button>
+    <div id="createFeeTypeResponse"></div>
+</div>
+
+</br> 
+</br> 
+
+
+<button class="toggle-btn" onclick="toggle('getFeeTypeSection')">Get Fee Type</button>
+<div id="getFeeTypeSection" class="content-section">
+    <input type="text" id="feeTypeGet" placeholder="Enter fee type id">
+    <button onclick="getFeeTypeById()">Submit</button>
+    <div id="feeTypeResponse"></div>
+</div>
+
+</br> 
+<hr></hr>
+</br> 
+
+
+<button class="toggle-btn" onclick="toggle('assignFeeSection')">Assign Fee</button>
+<div id="assignFeeSection" class="content-section">
+    <input type="text" id="assignStudentId" placeholder="Student ID">
+    <input type="text" id="assignFeeTypeId" placeholder="Fee Type ID">
+    <input type="text" id="assignedAmount" placeholder="Assigned Amount">
+    <button onclick="assignFee()">Submit</button>
+    <div id="assignFeeResponse"></div>
+</div>
+
+</br> 
+</br> 
+
+
+<button class="toggle-btn" onclick="toggle('getAssignedFeeSection')">Get Assigned Fee</button>
+<div id="getAssignedFeeSection" class="content-section">
+    <input type="text" id="assignedFeeGet" placeholder="Enter assigned fee id">
+    <button onclick="getAssignedFeeById()">Submit</button>
+    <div id="assignedFeeResponse"></div>
+</div>
+
+</br> 
+<hr></hr>
+</br> 
+
+
+<button class="toggle-btn" onclick="toggle('payFeeSection')">Pay Fee</button>
+<div id="payFeeSection" class="content-section">
+    <input type="text" id="payFeeAssignmentId" placeholder="Fee Assignment ID">
+    <input type="text" id="paidAmount" placeholder="Paid Amount">
+    <button onclick="payFee()">Submit</button>
+    <div id="payFeeResponse"></div>
+</div>
+
+</br> 
+</br> 
+
+
+<button class="toggle-btn" onclick="toggle('getFeePaymentSection')">Get Fee Payment</button>
+<div id="getFeePaymentSection" class="content-section">
+    <input type="text" id="feePaymentGet" placeholder="Enter payment id">
+    <button onclick="getFeePaymentById()">Submit</button>
+    <div id="feePaymentResponse"></div>
+</div>
+
+</br> 
+<hr></hr>
+</br> 
+
+<button class="toggle-btn" onclick="toggle('getDuesSection')">Get Pending Dues</button>
+<div id="getDuesSection" class="content-section">
+    <input type="text" id="duesStudentId" placeholder="Enter student id">
+    <button onclick="getPendingDues()">Submit</button>
+    <div id="duesResponse"></div>
+</div>
+
+</br> 
+</br> 
+
+
+<button class="toggle-btn" onclick="toggle('getPaymentsSection')">Get Payment Details</button>
+<div id="getPaymentsSection" class="content-section">
+    <input type="text" id="paymentsStudentId" placeholder="Enter student id">
+    <button onclick="getPaymentDetails()">Submit</button>
+    <div id="paymentsResponse"></div>
+</div>
+
+</br> 
+<hr></hr>
+</br>
+
+
+<div id="response" style="margin-top:20px; font-weight:bold;"></div>
+
+</body>
+</html>
