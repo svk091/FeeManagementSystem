@@ -6,6 +6,8 @@ import org.example.feemanagementsystem.domain.dto.FeeAssignment.FeeAssignmentRes
 import org.example.feemanagementsystem.domain.dto.fee_payment.CreateFeePaymentRequest;
 import org.example.feemanagementsystem.domain.dto.fee_payment.FeePaymentResponse;
 import org.example.feemanagementsystem.service.FeeService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,32 +22,37 @@ public class FeeController {
     }
 
     @PostMapping("/assign-fee")
-    public FeeAssignmentResponse assign(@Valid @RequestBody CreateFeeAssignmentRequest createFeeAssignmentRequest) {
-        return service.assign(createFeeAssignmentRequest);
+    public ResponseEntity<FeeAssignmentResponse> assign(@Valid @RequestBody CreateFeeAssignmentRequest createFeeAssignmentRequest) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(service.assign(createFeeAssignmentRequest));
     }
 
     @GetMapping("/get-fee/{id}")
-    public FeeAssignmentResponse getAssignedFee(@PathVariable Long id) {
-        return service.findAssignedFeeById(id);
+    public ResponseEntity<FeeAssignmentResponse> getAssignedFee(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findAssignedFeeById(id));
     }
 
     @PostMapping("/pay")
-    public FeePaymentResponse pay(@Valid @RequestBody CreateFeePaymentRequest createFeePaymentRequest) {
-        return service.payByFeeAssigned(createFeePaymentRequest);
+    public ResponseEntity<FeePaymentResponse> pay(@Valid @RequestBody CreateFeePaymentRequest createFeePaymentRequest) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(service.payByFeeAssigned(createFeePaymentRequest));
     }
 
     @GetMapping("/payment/{id}")
-    public FeePaymentResponse getFeePayed(@PathVariable Long id) {
-        return service.getFeePayedById(id);
+    public ResponseEntity<FeePaymentResponse> getFeePayed(@PathVariable Long id) {
+
+        return ResponseEntity.ok(service.getFeePayedById(id));
     }
 
     @GetMapping("/dues/{id}")
-    public List<FeeAssignmentResponse> getPendingDuesById(@PathVariable Long id) {
-        return service.getPendingDuesById(id);
+    public ResponseEntity<List<FeeAssignmentResponse>> getPendingDuesById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getPendingDuesById(id));
     }
 
     @GetMapping("/payments/{id}")
-    public List<FeePaymentResponse> getPayedDetailsByStudentId(@PathVariable Long id){
-        return service.getPayedDetailsByStudentId(id);
+    public ResponseEntity<List<FeePaymentResponse>> getPayedDetailsByStudentId(@PathVariable Long id){
+        return ResponseEntity.ok(service.getPayedDetailsByStudentId(id));
     }
 }

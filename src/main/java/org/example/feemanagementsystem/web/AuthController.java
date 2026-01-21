@@ -3,16 +3,19 @@ package org.example.feemanagementsystem.web;
 import jakarta.validation.Valid;
 import org.example.feemanagementsystem.domain.dto.auth.LoginRequest;
 import org.example.feemanagementsystem.domain.entity.User;
+import org.example.feemanagementsystem.exception.custom.UserAlreadyExistsException;
 import org.example.feemanagementsystem.repository.UserRepository;
 import org.example.feemanagementsystem.security.JwtUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -31,31 +34,30 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> register(@Valid @RequestBody LoginRequest loginRequest) {
         if (userRepository.findByUsername(loginRequest.username()).isPresent()) {
-            throw new RuntimeException("Username already exists");
+            throw new UserAlreadyExistsException("Error: Username already exists");
         }
         User user = new User();
         user.setUsername(loginRequest.username());
         user.setPassword(passwordEncoder.encode(loginRequest.password()));
         userRepository.save(user);
-        return "User Registered";
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("User Registered Successfull");
     }
 
     @PostMapping("/login")
-    public String login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request) {
 
-        try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.username(),
                             request.password()
                     )
             );
-            return jwtUtil.generateToken(request.username());
-        } catch (BadCredentialsException e) {
-            return "Invalid username or password";
+            String token = jwtUtil.generateToken(request.username());
+            return ResponseEntity.ok( token);
         }
-    }
 
 }

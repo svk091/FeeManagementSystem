@@ -198,20 +198,20 @@ async function payFee() {
         Authorization: "Bearer " + token,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ feeAssignmentId, paidAmount }),
+      body: JSON.stringify({
+        feeAssignmentId: parseInt(feeAssignmentId),
+        paidAmount: parseFloat(paidAmount),
+      }),
     });
 
-    // 1. Read as text first to avoid crashing on empty response
     const text = await response.text();
 
-    // 2. Check if empty
     if (!text) {
       document.getElementById("payFeeResponse").innerText =
-        "Payment Successful (No receipt data returned)";
+        "payment Sucessful -> No receipt/json data returned";
       return;
     }
 
-    // 3. Try to parse as JSON (if it's a receipt), otherwise show text
     try {
       const data = JSON.parse(text);
       renderTable("payFeeResponse", data);

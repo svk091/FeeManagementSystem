@@ -3,6 +3,7 @@ package org.example.feemanagementsystem.web;
 
 import org.example.feemanagementsystem.domain.dto.reports.StudentDuesDto;
 import org.example.feemanagementsystem.service.ReportService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,8 @@ public class ReportController {
     }
 
     @GetMapping("/getAllDues")
-    public List<StudentDuesDto> getAllDues() {
-        return reportService.getAllDues();
+    public ResponseEntity<List<StudentDuesDto>> getAllDues() {
+
+        return ResponseEntity.ok(reportService.getAllDues());
     }
 }
