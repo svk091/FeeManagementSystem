@@ -1,5 +1,6 @@
 package org.example.feemanagementsystem.web;
 
+import jakarta.validation.Valid;
 import org.example.feemanagementsystem.domain.dto.FeeAssignment.CreateFeeAssignmentRequest;
 import org.example.feemanagementsystem.domain.dto.FeeAssignment.FeeAssignmentResponse;
 import org.example.feemanagementsystem.domain.dto.fee_payment.CreateFeePaymentRequest;
@@ -19,7 +20,7 @@ public class FeeController {
     }
 
     @PostMapping("/assign-fee")
-    public FeeAssignmentResponse assign(@RequestBody CreateFeeAssignmentRequest createFeeAssignmentRequest) {
+    public FeeAssignmentResponse assign(@Valid @RequestBody CreateFeeAssignmentRequest createFeeAssignmentRequest) {
         return service.assign(createFeeAssignmentRequest);
     }
 
@@ -29,7 +30,7 @@ public class FeeController {
     }
 
     @PostMapping("/pay")
-    public FeePaymentResponse pay(@RequestBody CreateFeePaymentRequest createFeePaymentRequest) {
+    public FeePaymentResponse pay(@Valid @RequestBody CreateFeePaymentRequest createFeePaymentRequest) {
         return service.payByFeeAssigned(createFeePaymentRequest);
     }
 

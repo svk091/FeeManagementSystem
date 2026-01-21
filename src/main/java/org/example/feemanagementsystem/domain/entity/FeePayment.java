@@ -16,7 +16,7 @@ public class FeePayment {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "fee_assignmet_id", nullable = false)
+    @JoinColumn(name = "fee_assignment_id", nullable = false)
     private FeeAssignment feeAssignment;
 
     @Column(nullable = false, precision = 15, scale = 2)

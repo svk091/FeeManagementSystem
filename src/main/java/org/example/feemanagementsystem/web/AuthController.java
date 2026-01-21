@@ -1,5 +1,6 @@
 package org.example.feemanagementsystem.web;
 
+import jakarta.validation.Valid;
 import org.example.feemanagementsystem.domain.dto.auth.LoginRequest;
 import org.example.feemanagementsystem.domain.entity.User;
 import org.example.feemanagementsystem.repository.UserRepository;
@@ -30,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody LoginRequest loginRequest) {
+    public String register(@Valid @RequestBody LoginRequest loginRequest) {
         if (userRepository.findByUsername(loginRequest.username()).isPresent()) {
             throw new RuntimeException("Username already exists");
         }
@@ -42,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest request) {
+    public String login(@Valid @RequestBody LoginRequest request) {
 
         try {
             authenticationManager.authenticate(
@@ -57,9 +58,4 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/logout")
-    public String logout() {
-        //remove token at client
-        return "logut successfull";
-    }
 }

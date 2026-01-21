@@ -56,7 +56,6 @@ async function login() {
 
     document.getElementById("response").innerText = "Login Successful";
     document.getElementById("loginSection").style.display = "none";
-
     document.getElementById("loginUsername").value = "";
     document.getElementById("loginPassword").value = "";
 
@@ -86,7 +85,7 @@ function logout() {
   ];
   responseIds.forEach((id) => {
     const el = document.getElementById(id);
-    if (el) el.innerText = "";
+    if (el) el.innerHTML = "";
   });
 
   document
@@ -94,7 +93,6 @@ function logout() {
     .forEach((el) => (el.style.display = "none"));
 
   updateUIState();
-
   alert("Logged out");
 }
 
@@ -114,8 +112,8 @@ async function createStudent() {
       body: JSON.stringify({ name, mobileNo }),
     });
 
-    const data = await response.text();
-    document.getElementById("createResponse").innerText = data;
+    const data = await response.json();
+    renderTable("createResponse", data);
   } catch (error) {
     document.getElementById("createResponse").innerText = error.message;
   }
@@ -140,7 +138,6 @@ async function getStudentById() {
   }
 }
 
-
 async function assignFee() {
   try {
     if (!token) throw new Error("Not logged in");
@@ -162,8 +159,8 @@ async function assignFee() {
       }),
     });
 
-    const data = await response.text();
-    document.getElementById("assignFeeResponse").innerText = data;
+    const data = await response.json();
+    renderTable("assignFeeResponse", data);
   } catch (error) {
     document.getElementById("assignFeeResponse").innerText = error.message;
   }
@@ -204,8 +201,23 @@ async function payFee() {
       body: JSON.stringify({ feeAssignmentId, paidAmount }),
     });
 
-    const data = await response.text();
-    document.getElementById("payFeeResponse").innerText = data;
+    // 1. Read as text first to avoid crashing on empty response
+    const text = await response.text();
+
+    // 2. Check if empty
+    if (!text) {
+      document.getElementById("payFeeResponse").innerText =
+        "Payment Successful (No receipt data returned)";
+      return;
+    }
+
+    // 3. Try to parse as JSON (if it's a receipt), otherwise show text
+    try {
+      const data = JSON.parse(text);
+      renderTable("payFeeResponse", data);
+    } catch (e) {
+      document.getElementById("payFeeResponse").innerText = text;
+    }
   } catch (error) {
     document.getElementById("payFeeResponse").innerText = error.message;
   }
@@ -223,8 +235,8 @@ async function getFeePaymentById() {
         headers: { Authorization: "Bearer " + token },
       },
     );
-    const data = await response.text();
-    document.getElementById("feePaymentResponse").innerText = data;
+    const data = await response.json();
+    renderTable("feePaymentResponse", data);
   } catch (error) {
     document.getElementById("feePaymentResponse").innerText = error.message;
   }
@@ -268,7 +280,6 @@ async function getPaymentDetails() {
   }
 }
 
-
 async function getAllDues() {
   try {
     if (!token) throw new Error("Not logged in");
@@ -308,7 +319,6 @@ function renderTable(containerId, data) {
   const rows = Array.isArray(data) ? data : [data];
   const headers = Object.keys(rows[0]);
 
-  // Header
   const trHead = document.createElement("tr");
   headers.forEach((h) => {
     const th = document.createElement("th");
@@ -318,12 +328,17 @@ function renderTable(containerId, data) {
   });
   thead.appendChild(trHead);
 
-  // Body
   rows.forEach((row) => {
     const tr = document.createElement("tr");
     headers.forEach((h) => {
       const td = document.createElement("td");
-      td.innerText = row[h];
+
+      let value = row[h];
+      if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
+        value = new Date(value).toLocaleString();
+      }
+
+      td.innerText = value;
       td.style.padding = "5px";
       tr.appendChild(td);
     });

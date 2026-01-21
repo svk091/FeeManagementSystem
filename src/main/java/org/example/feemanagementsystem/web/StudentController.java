@@ -1,6 +1,7 @@
 package org.example.feemanagementsystem.web;
 
 
+import jakarta.validation.Valid;
 import org.example.feemanagementsystem.domain.dto.student.CreateStudentRequest;
 import org.example.feemanagementsystem.domain.dto.student.StudentResponse;
 import org.example.feemanagementsystem.service.StudentService;
@@ -15,9 +16,8 @@ public class StudentController {
         this.service = service;
     }
 
-
     @PostMapping
-    public StudentResponse create(@RequestBody CreateStudentRequest createStudentRequest) {
+    public StudentResponse create(@Valid @RequestBody CreateStudentRequest createStudentRequest) {
         return service.create(createStudentRequest);
     }
 
