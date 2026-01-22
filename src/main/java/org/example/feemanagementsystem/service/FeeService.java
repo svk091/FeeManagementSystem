@@ -12,6 +12,7 @@ import org.example.feemanagementsystem.domain.mapper.fee_payment.FeePaymentMappe
 import org.example.feemanagementsystem.repository.FeeAssignmentRepository;
 import org.example.feemanagementsystem.repository.FeePaymentRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class FeeService {
     }
 
 
+    @Transactional
     public FeePaymentResponse payByFeeAssigned(CreateFeePaymentRequest createFeePaymentRequest) {
         FeeAssignment feeAssignment = feeAssignmentRepository.findById(createFeePaymentRequest.feeAssignmentId())
                 .orElseThrow(() -> new EntityNotFoundException("No fee assigned with id: " + createFeePaymentRequest.feeAssignmentId()));

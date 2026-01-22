@@ -12,7 +12,6 @@ public class DataInitializer {
 
     @Bean
     CommandLineRunner initDatabase(
-            UserRepository userRepository,
             StudentRepository studentRepository,
             FeeAssignmentRepository assignmentRepository,
             FeePaymentRepository paymentRepository) {
