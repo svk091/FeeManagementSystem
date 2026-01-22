@@ -29,7 +29,7 @@ public class FeeController {
     }
 
     @GetMapping("/get-fee/{id}")
-    public ResponseEntity<FeeAssignmentResponse> getAssignedFee(@PathVariable Long id) {
+    public ResponseEntity<FeeAssignmentResponse> getAssignedFee(@PathVariable("id") Long id) {
         return ResponseEntity.ok(service.findAssignedFeeById(id));
     }
 
@@ -41,18 +41,28 @@ public class FeeController {
     }
 
     @GetMapping("/payment/{id}")
-    public ResponseEntity<FeePaymentResponse> getFeePayed(@PathVariable Long id) {
+    public ResponseEntity<FeePaymentResponse> getFeePayed(@PathVariable("id") Long id) {
 
         return ResponseEntity.ok(service.getFeePayedById(id));
     }
 
     @GetMapping("/dues/{id}")
-    public ResponseEntity<List<FeeAssignmentResponse>> getPendingDuesById(@PathVariable Long id) {
+    public ResponseEntity<List<FeeAssignmentResponse>> getPendingDuesById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(service.getPendingDuesById(id));
     }
 
     @GetMapping("/payments/{id}")
-    public ResponseEntity<List<FeePaymentResponse>> getPayedDetailsByStudentId(@PathVariable Long id){
+    public ResponseEntity<List<FeePaymentResponse>> getPayedDetailsByStudentId(@PathVariable("id") Long id){
         return ResponseEntity.ok(service.getPayedDetailsByStudentId(id));
     }
+
+
+    @GetMapping("/{feeAssignmentId}/payments")
+    public ResponseEntity<List<FeePaymentResponse>> getPaymentsByFeeAssignment(
+            @PathVariable("feeAssignmentId") Long feeAssignmentId) {
+        return ResponseEntity.ok(
+                service.getPaymentsByFeeAssignmentId(feeAssignmentId)
+        );
+    }
+
 }

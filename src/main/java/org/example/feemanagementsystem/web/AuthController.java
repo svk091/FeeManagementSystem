@@ -60,4 +60,11 @@ public class AuthController {
             return ResponseEntity.ok( token);
         }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        // remove jwt  token at client
+        return ResponseEntity.ok("Logged out successfully");
+    }
+
+
 }

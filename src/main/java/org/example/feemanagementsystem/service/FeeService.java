@@ -100,4 +100,22 @@ public class FeeService {
         return result;
     }
 
+    public List<FeePaymentResponse> getPaymentsByFeeAssignmentId(Long feeAssignmentId) {
+
+        feeAssignmentRepository.findById(feeAssignmentId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "No fee assignment with id: " + feeAssignmentId));
+
+        List<FeePayment> payments =
+                feePaymentRepository.findByFeeAssignmentId(feeAssignmentId);
+
+        List<FeePaymentResponse> result = new ArrayList<>();
+        for (FeePayment payment : payments) {
+            result.add(feePaymentMapper.toDto(payment));
+        }
+        return result;
+    }
+
+
 }

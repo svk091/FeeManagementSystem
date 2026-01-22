@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Fee Management System</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./helper.js"></script>
+
+    <script src="./script.js"></script>
+  </head>
+  <body>
+    <div
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
+      <h1>Fee Management System</h1>
+      <button onclick="logout()">Logout</button>
+    </div>
+
+    <div
+      id="response"
+      style="margin: 10px 0; color: blue; font-weight: bold"
+    ></div>
+
+    <hr />
+
+    <div class="category-bar">
+      <button
+        class="toggle-btn protected category-btn"
+        onclick="showCategory('studentCat', this)"
+      >
+        Students
+      </button>
+      <button
+        class="toggle-btn protected category-btn"
+        onclick="showCategory('feeCat', this)"
+      >
+        Fees
+      </button>
+      <button
+        class="toggle-btn protected category-btn"
+        onclick="showCategory('paymentCat', this)"
+      >
+        Payments
+      </button>
+      <button
+        class="toggle-btn protected category-btn"
+        onclick="showCategory('reportCat', this)"
+      >
+        Reports
+      </button>
+    </div>
+
+    <button class="toggle-btn auth-btn" onclick="toggle('regSection')">
+      Register
+    </button>
+    <button class="toggle-btn auth-btn" onclick="toggle('loginSection')">
+      Login
+    </button>
+
+    <hr />
+
+    <div id="studentCat" class="category">
+      <button class="toggle-btn" onclick="toggle('createSection')">
+        Create Student
+      </button>
+      <button class="toggle-btn" onclick="toggle('getSection')">
+        Fetch Student By ID
+      </button>
+    </div>
+
+    <div id="feeCat" class="category">
+      <button class="toggle-btn" onclick="toggle('assignFeeSection')">
+        Assign Fee To Student
+      </button>
+      <button class="toggle-btn" onclick="toggle('getDuesSection')">
+        View Student Dues
+      </button>
+    </div>
+
+    <div id="paymentCat" class="category">
+      <button class="toggle-btn" onclick="toggle('payFeeSection')">
+        Make Fee Payment
+      </button>
+      <button class="toggle-btn" onclick="toggle('getFeePaymentSection')">
+        Get Payment By ID
+      </button>
+      <button class="toggle-btn" onclick="toggle('getPaymentsSection')">
+        Get Payments By Student
+      </button>
+      <button
+        class="toggle-btn"
+        onclick="toggle('getAssignmentPaymentsSection')"
+      >
+        Get Payments By Fee Assignment
+      </button>
+    </div>
+
+    <div id="reportCat" class="category">
+      <button class="toggle-btn" onclick="toggle('getAllDuesSection')">
+        Student Dues Report
+      </button>
+      <button class="toggle-btn" onclick="toggle('getAllPaymentsSection')">
+        Fee Collection Report
+      </button>
+    </div>
+
+    <div id="contentArea">
+      <div id="regSection" class="content-section">
+        <input id="regUsername" placeholder="Username" />
+        <input id="regPassword" type="password" placeholder="Password" />
+        <button onclick="register()">Register</button>
+      </div>
+
+      <div id="loginSection" class="content-section">
+        <input id="loginUsername" placeholder="Username" />
+        <input id="loginPassword" type="password" placeholder="Password" />
+        <button onclick="login()">Login</button>
+      </div>
+
+      <div id="createSection" class="content-section">
+        <input id="createName" placeholder="Student Name" />
+        <input id="createMobile" placeholder="Mobile Number" />
+        <button onclick="createStudent()">Create</button>
+        <div id="createResponse"></div>
+      </div>
+
+      <div id="getSection" class="content-section">
+        <input id="studentGet" placeholder="Student ID" />
+        <button onclick="getStudentById()">Fetch</button>
+        <div id="studentResponse"></div>
+      </div>
+
+      <div id="assignFeeSection" class="content-section">
+        <input id="assignStudentId" placeholder="Student ID" />
+        <select id="feeTypeSelect">
+          <option value="TUITION">Tuition</option>
+          <option value="HOSTEL">Hostel</option>
+          <option value="TRANSPORT">Transport</option>
+        </select>
+        <input id="assignedAmount" placeholder="Amount" />
+        <button onclick="assignFee()">Assign</button>
+        <div id="assignFeeResponse"></div>
+      </div>
+
+      <div id="payFeeSection" class="content-section">
+        <input id="payFeeAssignmentId" placeholder="Fee Assignment ID" />
+        <input id="paidAmount" placeholder="Amount" />
+        <button onclick="payFee()">Pay</button>
+        <div id="payFeeResponse"></div>
+      </div>
+
+      <div id="getFeePaymentSection" class="content-section">
+        <input id="feePaymentGet" placeholder="Payment ID" />
+        <button onclick="getFeePaymentById()">Fetch</button>
+        <div id="feePaymentResponse"></div>
+      </div>
+
+      <div id="getPaymentsSection" class="content-section">
+        <input id="paymentsStudentId" placeholder="Student ID" />
+        <button onclick="getPaymentDetails()">Fetch</button>
+        <div id="paymentsResponse"></div>
+      </div>
+
+      <div id="getAssignmentPaymentsSection" class="content-section">
+        <input id="assignmentPaymentsId" placeholder="Fee Assignment ID" />
+        <button onclick="getPaymentsByFeeAssignment()">Fetch</button>
+        <div id="assignmentPaymentsResponse"></div>
+      </div>
+
+      <div id="getDuesSection" class="content-section">
+        <input id="duesStudentId" placeholder="Student ID" />
+        <button onclick="getPendingDues()">Fetch</button>
+        <div id="duesResponse"></div>
+      </div>
+
+      <div id="getAllDuesSection" class="content-section">
+        <button onclick="getAllDues()">Generate</button>
+        <div id="allDuesResponse"></div>
+      </div>
+
+      <div id="getAllPaymentsSection" class="content-section">
+        <button onclick="getAllPayments()">Generate</button>
+        <div id="allPaymentsResponse"></div>
+      </div>
+    </div>
+  </body>
+</html>

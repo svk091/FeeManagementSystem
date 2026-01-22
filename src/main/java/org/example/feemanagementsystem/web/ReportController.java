@@ -1,6 +1,7 @@
 package org.example.feemanagementsystem.web;
 
 
+import org.example.feemanagementsystem.domain.dto.fee_payment.FeePaymentResponse;
 import org.example.feemanagementsystem.domain.dto.reports.StudentDuesDto;
 import org.example.feemanagementsystem.service.ReportService;
 import org.springframework.http.ResponseEntity;
@@ -23,5 +24,10 @@ public class ReportController {
     public ResponseEntity<List<StudentDuesDto>> getAllDues() {
 
         return ResponseEntity.ok(reportService.getAllDues());
+    }
+
+    @GetMapping("/getAllPayments")
+    public ResponseEntity<List<FeePaymentResponse>> getAllPayments() {
+        return ResponseEntity.ok(reportService.getAllPayments());
     }
 }

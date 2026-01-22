@@ -1,0 +1,38 @@
+.content-section {
+  display: none;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 10px;
+  width: 320px;
+}
+
+.category-bar button {
+  margin-right: 6px;
+}
+
+.category {
+  display: none;
+  margin-top: 10px;
+}
+
+.toggle-btn {
+  background: #eee;
+  border: 1px solid #aaa;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.toggle-btn.active {
+  background: #4caf50;
+  color: white;
+  border-color: #4caf50;
+}
+
+table {
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+th {
+  background: #f2f2f2;
+}

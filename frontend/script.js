@@ -6,346 +6,217 @@ window.onload = function () {
 
 function updateUIState() {
   const protectedBtns = document.querySelectorAll(".protected");
+  const authBtns = document.querySelectorAll(".auth-btn");
 
   if (token) {
-    protectedBtns.forEach((btn) => (btn.style.display = "inline-block"));
+    protectedBtns.forEach((b) => (b.style.display = "inline-block"));
+    authBtns.forEach((b) => (b.style.display = "none"));
   } else {
-    protectedBtns.forEach((btn) => (btn.style.display = "none"));
+    protectedBtns.forEach((b) => (b.style.display = "none"));
+    authBtns.forEach((b) => (b.style.display = "inline-block"));
   }
 }
 
 function toggle(id) {
-  const x = document.getElementById(id);
-  document.querySelectorAll(".content-section").forEach((div) => {
-    if (div.id !== id) div.style.display = "none";
+  document.querySelectorAll(".content-section").forEach((s) => {
+    s.style.display = "none";
   });
-  x.style.display = x.style.display === "none" ? "block" : "none";
+
+  document.querySelectorAll(".toggle-btn").forEach((b) => {
+    b.classList.remove("active");
+  });
+
+  document.getElementById(id).style.display = "block";
+  event.target.classList.add("active");
+}
+
+function showCategory(categoryId, btn) {
+  document
+    .querySelectorAll(".category")
+    .forEach((c) => (c.style.display = "none"));
+  document
+    .querySelectorAll(".content-section")
+    .forEach((s) => (s.style.display = "none"));
+  document
+    .querySelectorAll(".category-btn")
+    .forEach((b) => b.classList.remove("active"));
+
+  clearResponses();
+  document.getElementById(categoryId).style.display = "block";
+  btn.classList.add("active");
 }
 
 async function register() {
-  try {
-    const username = document.getElementById("regUsername").value;
-    const password = document.getElementById("regPassword").value;
-    const response = await fetch("http://localhost:8080/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    const data = await response.text();
-    document.getElementById("response").innerText = data;
-  } catch (error) {
-    document.getElementById("response").innerText = error.message;
-  }
+  const username = regUsername.value;
+  const password = regPassword.value;
+
+  const res = await fetch(`${API_BASE}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+
+  response.innerText = await res.text();
 }
 
 async function login() {
-  try {
-    const username = document.getElementById("loginUsername").value;
-    const password = document.getElementById("loginPassword").value;
-    const response = await fetch("http://localhost:8080/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: loginUsername.value,
+      password: loginPassword.value,
+    }),
+  });
 
-    if (!response.ok) throw new Error("Login failed");
+  if (!res.ok) throw new Error("Login failed");
 
-    const data = await response.text();
-    token = data;
-    localStorage.setItem("token", token);
+  token = await res.text();
+  localStorage.setItem("token", token);
+  response.innerText = "Login Successful";
+  loginSection.style.display = "none";
 
-    document.getElementById("response").innerText = "Login Successful";
-    document.getElementById("loginSection").style.display = "none";
-    document.getElementById("loginUsername").value = "";
-    document.getElementById("loginPassword").value = "";
-
-    updateUIState();
-  } catch (error) {
-    document.getElementById("response").innerText = error.message;
-  }
+  updateUIState();
 }
 
 function logout() {
   token = null;
   localStorage.removeItem("token");
 
-  document.querySelectorAll("input").forEach((input) => (input.value = ""));
-
-  const responseIds = [
-    "response",
-    "createResponse",
-    "studentResponse",
-    "assignFeeResponse",
-    "assignedFeeResponse",
-    "payFeeResponse",
-    "feePaymentResponse",
-    "duesResponse",
-    "paymentsResponse",
-    "allDuesResponse",
-  ];
-  responseIds.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = "";
-  });
-
+  document.querySelectorAll("input").forEach((i) => (i.value = ""));
   document
-    .querySelectorAll(".content-section")
-    .forEach((el) => (el.style.display = "none"));
+    .querySelectorAll(".content-section,.category")
+    .forEach((e) => (e.style.display = "none"));
+  document
+    .querySelectorAll(".toggle-btn")
+    .forEach((b) => b.classList.remove("active"));
 
+  clearResponses();
   updateUIState();
   alert("Logged out");
 }
 
 async function createStudent() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  ensureAuth();
 
-    const name = document.getElementById("createName").value;
-    const mobileNo = document.getElementById("createMobile").value;
+  const res = await fetch(`${API_BASE}/student`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({
+      name: createName.value,
+      mobileNo: createMobile.value,
+    }),
+  });
 
-    const response = await fetch("http://localhost:8080/api/student", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, mobileNo }),
-    });
-
-    const data = await response.json();
-    renderTable("createResponse", data);
-  } catch (error) {
-    document.getElementById("createResponse").innerText = error.message;
-  }
+  renderTable("createResponse", await res.json());
 }
 
 async function getStudentById() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  ensureAuth();
 
-    const studentId = document.getElementById("studentGet").value;
-    const response = await fetch(
-      `http://localhost:8080/api/student/${studentId}`,
-      {
-        headers: { Authorization: "Bearer " + token },
-      },
-    );
+  const res = await fetch(`${API_BASE}/student/${studentGet.value}`, {
+    headers: authHeaders(false),
+  });
 
-    const data = await response.json();
-    renderTable("studentResponse", data);
-  } catch (error) {
-    document.getElementById("studentResponse").innerText = error.message;
-  }
+  renderTable("studentResponse", await res.json());
 }
 
 async function assignFee() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  ensureAuth();
 
-    const studentId = document.getElementById("assignStudentId").value;
-    const feeType = document.getElementById("feeTypeSelect").value;
-    const assignedAmount = document.getElementById("assignedAmount").value;
+  const res = await fetch(`${API_BASE}/fee/assign-fee`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({
+      studentId: +assignStudentId.value,
+      feeType: feeTypeSelect.value,
+      assignedAmount: +assignedAmount.value,
+    }),
+  });
 
-    const response = await fetch("http://localhost:8080/api/fee/assign-fee", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        studentId: parseInt(studentId),
-        feeType: feeType,
-        assignedAmount: parseFloat(assignedAmount),
-      }),
-    });
-
-    const data = await response.json();
-    renderTable("assignFeeResponse", data);
-  } catch (error) {
-    document.getElementById("assignFeeResponse").innerText = error.message;
-  }
-}
-
-async function getAssignedFeeById() {
-  try {
-    if (!token) throw new Error("Not logged in");
-
-    const assignedFeeId = document.getElementById("assignedFeeGet").value;
-    const response = await fetch(
-      `http://localhost:8080/api/fee/get-fee/${assignedFeeId}`,
-      {
-        headers: { Authorization: "Bearer " + token },
-      },
-    );
-
-    const data = await response.json();
-    renderTable("assignedFeeResponse", data);
-  } catch (error) {
-    document.getElementById("assignedFeeResponse").innerText = error.message;
-  }
+  renderTable("assignFeeResponse", await res.json());
 }
 
 async function payFee() {
+  ensureAuth();
+
+  const res = await fetch(`${API_BASE}/fee/pay`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({
+      feeAssignmentId: +payFeeAssignmentId.value,
+      paidAmount: +paidAmount.value,
+    }),
+  });
+
+  const text = await res.text();
   try {
-    if (!token) throw new Error("Not logged in");
-
-    const feeAssignmentId = document.getElementById("payFeeAssignmentId").value;
-    const paidAmount = document.getElementById("paidAmount").value;
-
-    const response = await fetch("http://localhost:8080/api/fee/pay", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        feeAssignmentId: parseInt(feeAssignmentId),
-        paidAmount: parseFloat(paidAmount),
-      }),
-    });
-
-    const text = await response.text();
-
-    if (!text) {
-      document.getElementById("payFeeResponse").innerText =
-        "payment Sucessful -> No receipt/json data returned";
-      return;
-    }
-
-    try {
-      const data = JSON.parse(text);
-      renderTable("payFeeResponse", data);
-    } catch (e) {
-      document.getElementById("payFeeResponse").innerText = text;
-    }
-  } catch (error) {
-    document.getElementById("payFeeResponse").innerText = error.message;
+    renderTable("payFeeResponse", JSON.parse(text));
+  } catch {
+    payFeeResponse.innerText = text || "Payment successful";
   }
 }
 
 async function getFeePaymentById() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  ensureAuth();
 
-    const paymentId = document.getElementById("feePaymentGet").value;
-    const response = await fetch(
-      `http://localhost:8080/api/fee/payment/${paymentId}`,
-      {
-        method: "GET",
-        headers: { Authorization: "Bearer " + token },
-      },
-    );
-    const data = await response.json();
-    renderTable("feePaymentResponse", data);
-  } catch (error) {
-    document.getElementById("feePaymentResponse").innerText = error.message;
-  }
+  const res = await fetch(`${API_BASE}/fee/payment/${feePaymentGet.value}`, {
+    headers: authHeaders(false),
+  });
+
+  renderTable("feePaymentResponse", await res.json());
 }
 
 async function getPendingDues() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  ensureAuth();
 
-    const studentId = document.getElementById("duesStudentId").value;
-    const response = await fetch(
-      `http://localhost:8080/api/fee/dues/${studentId}`,
-      {
-        headers: { Authorization: "Bearer " + token },
-      },
-    );
+  const res = await fetch(`${API_BASE}/fee/dues/${duesStudentId.value}`, {
+    headers: authHeaders(false),
+  });
 
-    const data = await response.json();
-    renderTable("duesResponse", data);
-  } catch (error) {
-    document.getElementById("duesResponse").innerText = error.message;
-  }
+  renderTable("duesResponse", await res.json());
 }
 
 async function getPaymentDetails() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  ensureAuth();
 
-    const studentId = document.getElementById("paymentsStudentId").value;
-    const response = await fetch(
-      `http://localhost:8080/api/fee/payments/${studentId}`,
-      {
-        headers: { Authorization: "Bearer " + token },
-      },
-    );
+  const res = await fetch(
+    `${API_BASE}/fee/payments/${paymentsStudentId.value}`,
+    {
+      headers: authHeaders(false),
+    },
+  );
 
-    const data = await response.json();
-    renderTable("paymentsResponse", data);
-  } catch (error) {
-    document.getElementById("paymentsResponse").innerText = error.message;
-  }
+  renderTable("paymentsResponse", await res.json());
 }
 
 async function getAllDues() {
-  try {
-    if (!token) throw new Error("Not logged in");
+  ensureAuth();
 
-    const response = await fetch(
-      "http://localhost:8080/api/report/getAllDues",
-      {
-        method: "GET",
-        headers: { Authorization: "Bearer " + token },
-      },
-    );
+  const res = await fetch(`${API_BASE}/report/getAllDues`, {
+    headers: authHeaders(false),
+  });
 
-    const data = await response.json();
-    renderTable("allDuesResponse", data);
-  } catch (error) {
-    document.getElementById("allDuesResponse").innerText = error.message;
-  }
+  renderTable("allDuesResponse", await res.json());
 }
 
-function renderTable(containerId, data) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = "";
+async function getAllPayments() {
+  ensureAuth();
 
-  if (!data || (Array.isArray(data) && data.length === 0)) {
-    container.innerText = "No data";
-    return;
-  }
-
-  const table = document.createElement("table");
-  table.border = "1";
-  table.style.borderCollapse = "collapse";
-  table.style.width = "100%";
-
-  const thead = document.createElement("thead");
-  const tbody = document.createElement("tbody");
-
-  const rows = Array.isArray(data) ? data : [data];
-  const headers = Object.keys(rows[0]);
-
-  const trHead = document.createElement("tr");
-  headers.forEach((h) => {
-    const th = document.createElement("th");
-    th.innerText = h;
-    th.style.padding = "5px";
-    trHead.appendChild(th);
-  });
-  thead.appendChild(trHead);
-
-  rows.forEach((row) => {
-    const tr = document.createElement("tr");
-    headers.forEach((h) => {
-      const td = document.createElement("td");
-
-      let value = row[h];
-      if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
-        value = new Date(value).toLocaleString();
-      }
-
-      td.innerText = value;
-      td.style.padding = "5px";
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
+  const res = await fetch(`${API_BASE}/report/getAllPayments`, {
+    headers: authHeaders(false),
   });
 
-  table.appendChild(thead);
-  table.appendChild(tbody);
-  container.appendChild(table);
+  renderTable("allPaymentsResponse", await res.json());
+}
+
+async function getPaymentsByFeeAssignment() {
+  ensureAuth();
+
+  const res = await fetch(
+    `${API_BASE}/fee/${assignmentPaymentsId.value}/payments`,
+    { headers: authHeaders(false) },
+  );
+
+  renderTable("assignmentPaymentsResponse", await res.json());
 }
